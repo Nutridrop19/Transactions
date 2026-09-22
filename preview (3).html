@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExpenseFlow — Personal Expense Tracker</title>
+<style>
+:root{--bg:#f5f7fb;--surface:#fff;--surface2:#f0f3f8;--text:#172033;--muted:#7b8496;--line:#e5e9f0;--primary:#5b5ce2;--primary2:#7778f5;--green:#20b486;--red:#ef5b68;--shadow:0 14px 40px rgba(24,34,56,.08);--radius:22px}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer}.app{max-width:1180px;margin:auto;padding:28px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}.brand{display:flex;align-items:center;gap:12px}
+.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--primary2));display:grid;place-items:center;color:white;font-size:21px;box-shadow:0 10px 24px rgba(91,92,226,.25)}
+.brand h1{font-size:21px;letter-spacing:-.5px}.brand p{font-size:12px;color:var(--muted);margin-top:3px}.year{border:1px solid var(--line);background:white;padding:10px 14px;border-radius:12px;color:var(--text);font-weight:600}
+.sync{font-size:11px;color:var(--green);margin-right:10px}.hero{display:grid;grid-template-columns:1.4fr .6fr;gap:18px;margin-bottom:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.hero-main{padding:28px;background:linear-gradient(135deg,#5051d8,#7778f5);color:white;overflow:hidden;position:relative}.hero-main:after{content:"";position:absolute;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.08);right:-55px;top:-70px}
+.eyebrow{font-size:13px;opacity:.8;margin-bottom:8px}.hero-main h2{font-size:34px;letter-spacing:-1px}.hero-main .sub{margin-top:8px;font-size:13px;opacity:.78}
+.hero-actions{display:flex;gap:10px;margin-top:22px}.btn{border:0;border-radius:12px;padding:11px 15px;font-weight:700}.btn-light{background:white;color:#4f50ce}.btn-light:disabled{cursor:wait}.btn-ghost{background:rgba(255,255,255,.13);color:white;border:1px solid rgba(255,255,255,.18)}
+.balance{padding:24px}.balance-label{font-size:12px;color:var(--muted)}.balance-value{font-size:25px;font-weight:800;margin:8px 0}.balance-note{font-size:12px;color:var(--green);font-weight:700}
+.section-head{display:flex;justify-content:space-between;align-items:end;margin:26px 2px 14px}.section-head h3{font-size:18px}.section-head p{font-size:12px;color:var(--muted);margin-top:4px}
+.month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.month{padding:18px;transition:.2s;cursor:pointer;position:relative}.month:hover{transform:translateY(-3px);box-shadow:0 18px 42px rgba(24,34,56,.11)}.month.active{border-color:#bfc0ff;box-shadow:0 0 0 3px rgba(91,92,226,.08)}
+.month-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.month-name{font-weight:800}.month-dot{width:9px;height:9px;border-radius:50%;background:var(--primary)}
+.month-total{font-size:20px;font-weight:800;letter-spacing:-.5px}.month-count{font-size:11px;color:var(--muted);margin-top:5px}.bar{height:6px;background:var(--surface2);border-radius:99px;margin-top:16px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:99px}
+.content{display:grid;grid-template-columns:1.35fr .65fr;gap:18px;margin-top:18px}.panel{padding:22px}.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.panel-head h3{font-size:16px}.small{font-size:12px;color:var(--muted)}
+.transaction{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.transaction:last-child{border-bottom:0}.icon{width:40px;height:40px;border-radius:13px;background:var(--surface2);display:grid;place-items:center;font-size:18px}.tx{flex:1}.tx strong{display:block;font-size:13px}.tx span{font-size:11px;color:var(--muted)}.amount{font-weight:800;font-size:13px}
+.cat-list{display:grid;gap:12px}.cat-row{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:9px}.cat-row .mini{height:7px;background:var(--surface2);border-radius:99px;grid-column:2/4;margin-top:-5px}.cat-row .mini i{display:block;height:100%;background:var(--primary);border-radius:99px}
+.empty{text-align:center;padding:30px;color:var(--muted);font-size:13px}.modal{position:fixed;inset:0;background:rgba(16,22,38,.45);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:18px;z-index:10}.modal.show{display:flex}.modal-box{width:min(520px,100%);background:white;border-radius:24px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.2);animation:pop .2s ease}
+@keyframes pop{from{transform:scale(.97);opacity:0}to{transform:scale(1);opacity:1}}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.close{border:0;background:var(--surface2);width:36px;height:36px;border-radius:10px;font-size:18px}
+.form{display:grid;gap:14px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:7px}.field input,.field select{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;outline:none;background:white;color:var(--text)}.field input:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(91,92,226,.08)}.save{width:100%;background:var(--primary);color:white}.filter{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:white;font-size:12px}
+@media(max-width:850px){.hero,.content{grid-template-columns:1fr}.month-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:600px){.app{padding:16px}.topbar{align-items:flex-start}.month-grid{grid-template-columns:repeat(2,1fr)}.hero-main h2{font-size:27px}.month-total{font-size:17px}.sync{display:none}}
+</style>
+<style>
+.donut-card{margin-top:18px}.donut-layout{display:grid;grid-template-columns:minmax(230px,300px) 1fr;gap:24px;align-items:center}.donut-wrap{display:grid;place-items:center;min-height:270px}.donut{width:245px;height:245px;border-radius:50%;position:relative;display:grid;place-items:center;background:conic-gradient(#e5e7eb 0 100%)}.donut:after{content:"";position:absolute;width:132px;height:132px;border-radius:50%;background:var(--surface,#fff)}.donut-center{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;max-width:115px}.donut-center strong{font-size:18px;line-height:1.15;word-break:break-word}.donut-center span{font-size:12px;color:var(--muted);margin-top:4px}.donut-legend{display:grid;gap:10px;max-height:280px;overflow:auto;padding-right:4px}.legend-row{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:10px;align-items:center}.legend-dot{width:12px;height:12px;border-radius:50%}.legend-name{font-size:13px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.legend-value{text-align:right}.legend-value strong{display:block;font-size:13px}.legend-value span{display:block;font-size:11px;color:var(--muted)}.empty-chart{color:var(--muted);font-size:13px;text-align:center;padding:24px}@media(max-width:680px){.donut-layout{grid-template-columns:1fr}.donut-wrap{min-height:235px}.donut{width:220px;height:220px}.donut:after{width:120px;height:120px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand"><div class="logo">↗</div><div><h1>ExpenseFlow</h1><p>Personal expense tracker</p></div></div>
+  <div><span class="sync" id="syncStatus">● Google Sheets</span><select class="year" id="yearSelect"></select></div>
+</header>
+
+<section class="hero">
+  <div class="card hero-main">
+    <div class="eyebrow">TOTAL PENGELUARAN TAHUN INI</div><h2 id="yearTotal">Rp0</h2>
+    <div class="sub">Semua transaksi disimpan di Google Sheets.</div>
+    <div class="hero-actions">
+      <button class="btn btn-light" id="addBtn" onclick="openModal()">＋ Tambah Pengeluaran</button>
+      <button class="btn btn-ghost" onclick="resetData()">↺ Reset Semua</button>
+    </div>
+  </div>
+  <div class="card balance"><div class="balance-label">Rata-rata / bulan</div><div class="balance-value" id="average">Rp0</div><div class="balance-note" id="compare">● Tersambung ke Google Sheets</div></div>
+</section>
+
+<div class="section-head"><div><h3>Pengeluaran Bulanan</h3><p>Klik bulan untuk melihat transaksi.</p></div></div>
+<section class="month-grid" id="months"></section>
+
+<section class="card panel donut-card" id="categoryChartCard">
+  <div class="panel-head"><div><h3 id="categoryChartTitle">Komposisi Kategori</h3><span class="small">Distribusi pengeluaran berdasarkan kategori.</span></div><span class="small" id="categoryChartTotal">Rp0</span></div>
+  <div class="donut-layout">
+    <div class="donut-wrap"><div class="donut" id="categoryDonut"><div class="donut-center"><strong id="donutTotal">Rp0</strong><span>Total</span></div></div></div>
+    <div class="donut-legend" id="categoryLegend"></div>
+  </div>
+</section>
+
+<section class="content">
+<div class="card panel">
+  <div class="panel-head"><div><h3 id="detailTitle">Transaksi Terbaru</h3><span class="small" id="detailSub">Semua transaksi</span></div><select class="filter" id="categoryFilter" onchange="renderDetails()"><option value="all">Semua kategori</option></select></div>
+  <div id="transactions"></div>
+</div>
+<div class="card panel">
+  <div class="panel-head"><h3>Kategori</h3><span class="small" id="categoryTotal">Rp0</span></div>
+  <div class="cat-list" id="categories"></div>
+</div>
+</section>
+</div>
+
+<div class="modal" id="modal">
+<div class="modal-box">
+<div class="modal-head"><div><h3>Tambah Pengeluaran</h3><span class="small">Data akan langsung masuk Google Sheets</span></div><button class="close" onclick="closeModal()">×</button></div>
+<form class="form" onsubmit="addExpense(event)">
+<div class="field"><label>Tanggal</label><input id="date" type="date" required></div>
+<div class="field"><label>Nominal</label><input id="amount" type="number" min="1" placeholder="Contoh: 35000" required></div>
+<div class="field"><label>Kategori</label><select id="category" required></select></div>
+<div class="field"><label>Catatan</label><input id="note" type="text" placeholder="Contoh: Makan siang"></div>
+<button class="btn save" id="saveBtn">Simpan Pengeluaran</button>
+</form>
+</div></div>
+
+<script>
+const API_URL="https://script.google.com/a/macros/student.binawan.ac.id/s/AKfycbzA0s98UXFkVjxeC120mKyds0yPv3pU5UcK_5P59G5nQDKw04fPu8wq3raXjeDLhXAM/exec";
+const categories=[["Makanan & Minuman","🍜"],["Transportasi","🚗"],["Belanja","🛒"],["Kebutuhan Rumah","🏠"],["Tagihan","💡"],["Hiburan","🎮"],["Kesehatan","💊"],["Pendidikan","📚"],["Investasi","💰"],["Hadiah","🎁"],["Lainnya","📦"]];
+const months=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+let selectedMonth=null,data=[];
+
+const rupiah=n=>new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(n||0);
+const icon=c=>(categories.find(x=>x[0]===c)||["","📦"])[1];
+
+function setup(){
+ const y=new Date().getFullYear(),ys=document.getElementById("yearSelect");
+ for(let i=y-2;i<=y+2;i++){let o=document.createElement("option");o.value=i;o.textContent=i;if(i===y)o.selected=true;ys.appendChild(o)}
+ categories.forEach(([name,emoji])=>{document.getElementById("category").add(new Option(`${emoji}  ${name}`,name));document.getElementById("categoryFilter").add(new Option(name,name))});
+ document.getElementById("date").value=new Date().toISOString().slice(0,10);
+ render();
+ loadFromSheets();
+}
+function setSyncing(v){
+ document.getElementById("syncStatus").textContent=v?"● Menyinkronkan...":"● Google Sheets";
+ document.getElementById("syncStatus").style.color=v?"#fff":"";
+ document.getElementById("addBtn").disabled=v;document.getElementById("saveBtn").disabled=v;
+}
+async function loadFromSheets(){
+ try{
+  setSyncing(true);
+  const r=await fetch(API_URL+"?t="+Date.now(),{cache:"no-store"});
+  if(!r.ok)throw new Error("HTTP "+r.status);
+  const j=await r.json();
+  if(!j.success)throw new Error(j.message||"Gagal membaca data");
+  data=Array.isArray(j.data)?j.data:[];render();
+  document.getElementById("compare").textContent="● Tersambung & tersinkron";
+ }catch(e){
+  console.error(e);
+  document.getElementById("compare").textContent="● Gagal terhubung ke Google Sheets";
+ }finally{setSyncing(false)}
+}
+async function postToSheets(payload){
+ const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
+ if(!r.ok)throw new Error("HTTP "+r.status);
+ return r.json();
+}
+function render(){
+ const y=+document.getElementById("yearSelect").value,yd=data.filter(x=>Number(x.year)===y),total=yd.reduce((a,x)=>a+Number(x.amount||0),0);
+ document.getElementById("yearTotal").textContent=rupiah(total);document.getElementById("average").textContent=rupiah(total/12);
+ const totals=months.map((_,i)=>yd.filter(x=>new Date(x.date+"T00:00:00").getMonth()===i).reduce((a,x)=>a+Number(x.amount||0),0)),max=Math.max(1,...totals);
+ document.getElementById("months").innerHTML=months.map((m,i)=>{const arr=yd.filter(x=>new Date(x.date+"T00:00:00").getMonth()===i);return `<div class="card month ${selectedMonth===i?"active":""}" onclick="selectMonth(${i})"><div class="month-top"><span class="month-name">${m}</span><span class="month-dot"></span></div><div class="month-total">${rupiah(totals[i])}</div><div class="month-count">${arr.length} transaksi</div><div class="bar"><i style="width:${totals[i]/max*100}%"></i></div></div>`}).join("");
+ renderDetails();renderCategories(yd);renderCategoryDonut(yd, selectedMonth===null ? "Semua Bulan" : months[selectedMonth]);
+}
+function renderCategoryDonut(arr, monthName){
+ const map={};arr.forEach(x=>{const c=x.category||"Lainnya";map[c]=(map[c]||0)+Number(x.amount||0)});
+ const entries=Object.entries(map).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+ const total=entries.reduce((a,[,v])=>a+v,0);
+ const donut=document.getElementById("categoryDonut"),legend=document.getElementById("categoryLegend");
+ document.getElementById("categoryChartTitle").textContent="Komposisi Kategori · "+monthName;
+ document.getElementById("categoryChartTotal").textContent=rupiah(total);
+ document.getElementById("donutTotal").textContent=rupiah(total);
+ if(!entries.length){donut.style.background="conic-gradient(#e5e7eb 0 100%)";legend.innerHTML='<div class="empty-chart">Belum ada pengeluaran di bulan ini.</div>';return}
+ const colors=["#6366f1","#06b6d4","#f59e0b","#10b981","#ef4444","#8b5cf6","#ec4899","#14b8a6","#f97316","#64748b","#84cc16"];
+ let start=0;const slices=entries.map(([name,value],i)=>{const end=start+value/total*100,color=colors[i%colors.length],slice={name,value,color,start,end};start=end;return slice});
+ donut.style.background="conic-gradient("+slices.map(x=>`${x.color} ${x.start}% ${x.end}%`).join(",")+")";
+ legend.innerHTML=slices.map(x=>{const pct=x.value/total*100;return `<div class="legend-row"><span class="legend-dot" style="background:${x.color}"></span><span class="legend-name" title="${escapeHtml(x.name)}">${escapeHtml(x.name)}</span><span class="legend-value"><strong>${rupiah(x.value)}</strong><span>${pct.toFixed(1)}%</span></span></div>`}).join("");
+}
+function selectMonth(i){selectedMonth=i;document.getElementById("categoryFilter").value="all";render()}
+function renderDetails(){
+ const y=+document.getElementById("yearSelect").value,f=document.getElementById("categoryFilter").value;let arr=data.filter(x=>Number(x.year)===y);
+ if(selectedMonth!==null)arr=arr.filter(x=>new Date(x.date+"T00:00:00").getMonth()===selectedMonth);if(f!=="all")arr=arr.filter(x=>x.category===f);
+ arr.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+ document.getElementById("detailTitle").textContent=selectedMonth===null?"Transaksi Terbaru":months[selectedMonth];document.getElementById("detailSub").textContent=`${arr.length} transaksi`;
+ document.getElementById("transactions").innerHTML=arr.length?arr.map(x=>`<div class="transaction"><div class="icon">${icon(x.category)}</div><div class="tx"><strong>${escapeHtml(x.note||x.category)}</strong><span>${new Date(x.date+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})} · ${escapeHtml(x.category)}</span></div><div class="amount">${rupiah(x.amount)}</div></div>`).join(""):`<div class="empty">Belum ada pengeluaran di periode ini.</div>`;
+}
+function renderCategories(arr){
+ const map={};arr.forEach(x=>map[x.category]=(map[x.category]||0)+Number(x.amount||0));const entries=Object.entries(map).sort((a,b)=>b[1]-a[1]),total=arr.reduce((a,x)=>a+Number(x.amount||0),0);
+ document.getElementById("categoryTotal").textContent=rupiah(total);document.getElementById("categories").innerHTML=entries.length?entries.map(([c,v])=>`<div class="cat-row"><span>${icon(c)}</span><strong>${escapeHtml(c)}</strong><span class="small">${rupiah(v)}</span><div class="mini"><i style="width:${total?v/total*100:0}%"></i></div></div>`).join(""):`<div class="empty">Belum ada data.</div>`;
+}
+function openModal(){document.getElementById("modal").classList.add("show")}function closeModal(){document.getElementById("modal").classList.remove("show")}
+async function addExpense(e){
+ e.preventDefault();
+ const payload={action:"addExpense",date:document.getElementById("date").value,amount:+document.getElementById("amount").value,category:document.getElementById("category").value,note:document.getElementById("note").value.trim()};
+ try{setSyncing(true);const j=await postToSheets(payload);if(!j.success)throw new Error(j.message||"Gagal menyimpan");closeModal();e.target.reset();document.getElementById("date").value=new Date().toISOString().slice(0,10);await loadFromSheets();alert("Pengeluaran berhasil disimpan ke Google Sheets.")}catch(err){alert("Gagal menyimpan ke Google Sheets.\n\n"+err.message)}finally{setSyncing(false)}
+}
+async function resetData(){
+ if(data.length===0){alert("Data sudah kosong.");return}
+ if(!confirm("Reset SEMUA pengeluaran di Google Sheets?"))return;
+ if(!confirm("Yakin? Semua transaksi akan dihapus dan tidak bisa dibatalkan."))return;
+ try{setSyncing(true);const j=await postToSheets({action:"resetAll"});if(!j.success)throw new Error(j.message||"Gagal reset");data=[];selectedMonth=null;render();alert("Semua data berhasil di-reset.")}catch(err){alert("Gagal reset Google Sheets.\n\n"+err.message)}finally{setSyncing(false)}
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+document.getElementById("yearSelect").addEventListener("change",()=>{selectedMonth=null;render()});
+document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
+setup();
+</script>
+</body>
+</html>
